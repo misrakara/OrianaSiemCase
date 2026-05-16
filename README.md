@@ -10,7 +10,7 @@
 
 **Heterojen ağlardan gelen siber güvenlik verilerini toplayan, anlamlandıran ve proaktif olarak raporlayan modern NoSQL tabanlı SIEM çözümü**
 
-[Genel Bakış](#-genel-bakış) • [Proje Gelişim Aşamaları](#-proje-gelişim-aşamaları-ve-mimari) • [Teknik Spektrum](#-teknik-spektrum) • [Hızlı Başlangıç](#-kurulum-ve-sistem-gereksinimleri) • [Kod Mimarisi](#-proje-kaynak-kod-mimarisi) • [Gelişmiş Özellikler](#-gelişmiş-özellikler-ve-mantıksal-kurallar)
+[Genel Bakış](#-genel-bakış) • [Proje Gelişim Aşamaları](#-proje-gelişim-aşamaları-ve-mimari) • [Teknik Spektrum](#-teknik-spektrum) • [Kurulum ve Sistem Gereksinimleri](#️-kurulum-ve-sistem-gereksinimleri) • [Kod Mimarisi](#-proje-kaynak-kod-mimarisi) • [Gelişmiş Özellikler](#-gelişmiş-özellikler-ve-mantıksal-kurallar)
 
 </div>
 
@@ -79,11 +79,10 @@ Sistem, ham log verisinin siber güvenlik istihbaratına dönüşme sürecini 5 
 * **Python (v3.10+):** Dashboard ve PDF modülü için gereklidir.
 * **.NET SDK (v8.0):** C# projelerinin (`Scanner` ve `TestSender`) derlenmesi için kurulmalıdır.
 
-### 1️⃣ Bağımlılıklerin Yüklenmesi (Python)
+### 1️⃣ Bağımlılıkların Yüklenmesi (Python)
 Terminali projenin kök dizininde açarak gerekli kütüphaneleri yükleyin:
 ```bash
 pip install streamlit pymongo pandas plotly fpdf
-
 2️⃣ Dijital Sertifikaların Yerleşimi (mTLS)
 OpenSSL ile üretilen sertifika paketlerini ilgili derleme (output) klasörlerine yerleştirin:
 
@@ -111,6 +110,7 @@ Bash
 cd SIEM.TestSender
 dotnet run
 Ekrana gelen menüden Manuel UDP, Manuel TCP-mTLS veya Hibrit Simülasyon modlarından birini seçerek sisteme log basın.
+
 📚 Proje Kaynak Kod Mimarisi
 1️⃣ Çekirdek Arayüz ve Veri İşleme Motoru (app.py)
 MongoDB bağlantısını yönetir, Pandas ve Plotly kullanarak dinamik filtreleme ve grafik yapılarını oluşturur.
@@ -133,17 +133,17 @@ elif 'msgTime' in df.columns:
 df['LogTime'] = pd.to_datetime(df['LogTime'], errors='coerce')
 df['LogTime'] = df['LogTime'].fillna(pd.Timestamp.now())
 2️⃣ Çift Taraflı Sertifika Doğrulamalı Dinleyici (SIEM.Scanner / Program.cs)
-Asenkron mimaride çalışarak clientCertificateRequired: true parametresiyle mTLS el sıkışmasını (Handshake) zorunlu kılar.
+Asenkron mimaride çalışarak clientCertificateRequired: true parametresiyle mTLS el skullşmasını (Handshake) zorunlu kılar.
 
 C#
 // TLS 1.2 üzerinden istemci sertifikası zorunlu kılınarak güvenli handshake başlatılır
 await sslStream.AuthenticateAsServerAsync(cert, clientCertificateRequired: true, enabledSslProtocols: SslProtocols.Tls12, checkCertificateRevocation: false);
 3️⃣ Ayrıştırıcı Motoru (SIEM.Core / Helpers / CefParser.cs)
-Compiled Regex kullanarak standart dışı CEF metin yığınlarındaki 7 ana zorunlu alanı performanslı bir şekilde yakalar ve MongoDB için sanitize eder.
+Compiled Regex kullanarak standart dışı CEF metin yığınlarındaki 7 ana zorunlu alanı performanslı bir şekilde yakalar Genel sistem bilgilendirmelerini ve veritabanı için sanitize eder.
 
 C#
 private static readonly Regex CefHeaderRegex = new Regex(@"^CEF:(?<version>\d+)\|(?<vendor>[^|]+)\|(?<product>[^|]+)\|(?<devVersion>[^|]+)\|(?<eventId>[^|]+)\|(?<name>[^|]+)\|(?<severity>[^|]+)\\", RegexOptions.Compiled);
-🔒 Gelişmiş Özellikler ve Mantıksal Kurallar
+🔒 Gelişmiş Özellikler sonsuz Mantıksal Kurallar
 Sıfır Veri Kaybı (Zero-Loss) Prensibi: Zaman damgası veya şeması bozuk loglar sistem dışına atılmak yerine akıllı fallback mekanizması ile kurtarılarak analiz süreçlerine dahil edilir.
 
 Dinamik Coğrafi Normalizasyon (Analiz Modu): Türkiye kaynaklı saldırılar tespit edildiğinde, bölgesel tehdit yoğunluğunu doğru kümelemek adına veriler 3 ana siber metropole (İstanbul, Ankara, İzmir) yönlendirilir ve haritada Bubble Chart büyüklükleriyle yansıtılır.
@@ -176,3 +176,5 @@ Geliştirici: Mısra Kara
 Kurum: Karabük Üniversitesi - Bilgisayar Mühendisliği
 
 Staj Dönemi / Firma: İşyeri Eğitimi (2026) - Ozztech Bilgi Güvenliği / Oriana Tech
+
+Made with by Mısra Kara
