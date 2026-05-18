@@ -170,7 +170,52 @@ private static readonly Regex CefHeaderRegex = new Regex(@"^CEF:(?<version>\d+)\
 * 📊 **0 Veri Kaybı** Akıllı Fallback mekanizması doğrulaması.
 * 🛡️ **Uçtan Uca mTLS** TLS 1.2 protokolü tabanlı kimlik doğrulama şifrelemesi.
 
----
+## 📊 Örnek Veri Modelleri ve Teslim Kanıtları
+
+Case-study kapsamında veritabanı mimarisinde tutulan, parse edilen ve korelasyon motoru tarafından üretilen örnek veri blokları aşağıda sunulmuştur:
+
+### 1️⃣ Veritabanında Tutulan Ham ve Parse Edilmiş Log Örnekleri (MongoDB Document)
+Sisteme TCP-mTLS veya UDP üzerinden gelen ham log metni, CefParser tarafından işlenerek aşağıdaki hiyerarşik NoSQL nesnesi (JSON) biçiminde saklanmaktadır:
+
+```json
+{
+  "_id": "69fb5813da2f9fd632f15240",
+  "LogTime": "2026-05-06T15:02:43.393+00:00",
+  "Protocol": "TCP-mTLS",
+  "SourceIp": "127.0.0.1",
+  "RawData": "CEF:0|OrianaTech|Firewall|1.0|100|Login Success|3|src=192.168.1.10 dst=10.0.0.5 user=misra",
+  "CefVersion": "0",
+  "Vendor": "OrianaTech",
+  "Product": "Firewall",
+  "DeviceVersion": "1.0",
+  "DeviceEventClassId": "100",
+  "Name": "Login Success",
+  "Severity": "3",
+  "Country": "Türkiye",
+  "City": "Istanbul",
+  "Extensions": {
+    "src": "192.168.1.10",
+    "dst": "10.0.0.5",
+    "user": "misra"
+  }
+}
+
+2️⃣ Korelasyon Motoru Tarafından Üretilen Örnek Alarm Kaydı
+rules.json dosyasındaki eşik değerleri (Threshold) ve zaman pencereleri (Time Window) tetiklendiğinde sistem tarafından üretilen örnek kritik alarm yapısı:
+
+JSON
+{
+  "_id": "70ab5813da2f9fd632f15999",
+  "AlarmTime": "2026-05-06T15:03:00.124+00:00",
+  "RuleName": "Brute Force Detection",
+  "TriggeredIp": "192.168.1.10",
+  "DetectionType": "Aggregation Pipeline (DB Level)",
+  "TriggeredThreshold": 5,
+  "ObservedEventCount": 6,
+  "TimeWindowMinutes": 1,
+  "AlertSeverity": "Critical",
+  "Status": "Active"
+}
 
 ## 📂 Kapsamlı Dokümantasyon
 
