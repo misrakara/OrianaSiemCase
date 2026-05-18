@@ -84,100 +84,93 @@ Sistem, ham log verisinin siber güvenlik istihbaratına dönüşme sürecini 5 
 Terminali projenin kök dizininde açarak gerekli kütüphaneleri yükleyin:
 ```bash
 pip install streamlit pymongo pandas plotly fpdf
-```
-
-### 2️⃣ Dijital Sertifikaların Yerleşimi (mTLS)
+2️⃣ Dijital Sertifikaların Yerleşimi (mTLS)
 OpenSSL ile üretilen sertifika paketlerini ilgili derleme (output) klasörlerine yerleştirin:
-* `server.pfx` (Şifre: 1234) ➡️ `SIEM.Scanner` output dizinine.
-* `client.pfx` (Şifre: 1234) ➡️ `SIEM.TestSender` output dizinine.
 
-### 3️⃣ Soket Dinleyicinin Başlatılması (C#)
+server.pfx (Şifre: 1234) ➡️ SIEM.Scanner output dizinine.
+
+client.pfx (Şifre: 1234) ➡️ SIEM.TestSender output dizinine.
+
+3️⃣ Soket Dinleyicinin Başlatılması (C#)
 UDP ve TCP-mTLS log akışlarını kabul edecek ana motoru ayağa kaldırın:
-```bash
+
+Bash
 cd SIEM.Scanner
 dotnet run
-```
-*Konsolda "Sistem UDP ve TCP (mTLS) 514 üzerinden dinlemede." uyarısı görüldüğünde sistem hazırdır.*
+Konsolda "Sistem UDP ve TCP (mTLS) 514 üzerinden dinlemede." uyarısı görüldüğünde sistem hazırdır.
 
-### 4️⃣ SOC Dashboard Arayüzünün Çalıştırılması
+4️⃣ SOC Dashboard Arayüzünün Çalıştırılması
 Veritabanındaki logları anlık analiz etmek ve haritalandırmak için Streamlit'i tetikleyin:
-```bash
-streamlit run app.py
-```
-*Sistem otonom olarak varsayılan tarayıcıda http://localhost:8501 adresini başlatacaktır.*
 
-### 5️⃣ Log Akışının Tetiklenmesi (Simülasyon)
+Bash
+streamlit run app.py
+Sistem otonom olarak varsayılan tarayıcıda http://localhost:8501 adresini başlatacaktır.
+
+5️⃣ Log Akışının Tetiklenmesi (Simülasyon)
 Sisteme test verisi basmak ve korelasyon kurallarını tetiklemek için simülasyon yazılımını başlatın:
-```bash
+
+Bash
 cd SIEM.TestSender
 dotnet run
-```
-*Ekrana gelen menüden Manuel UDP, Manuel TCP-mTLS veya Hibrit Simülasyon modlarından birini seçerek sisteme log basın.*
+Ekrana gelen menüden Manuel UDP, Manuel TCP-mTLS veya Hibrit Simülasyon modlarından birini seçerek sisteme log basın.
 
----
-
-## 📚 Proje Kaynak Kod Mimarisi
-
-### 1️⃣ Çekirdek Arayüz ve Veri İşleme Motoru (`app.py`)
+📚 Proje Kaynak Kod Mimarisi
+1️⃣ Çekirdek Arayüz ve Veri İşleme Motoru (app.py)
 MongoDB bağlantısını yönetir, Pandas ve Plotly kullanarak dinamik filtreleme ve grafik yapılarını oluşturur.
 
-* **Unicode Karakter Normalizasyonu:** Codec hatalarını önlemek için Türkçe karakterleri evrensel ASCII karşılıklarına dönüştürür.
-```python
+Unicode Karakter Normalizasyonu: Codec hatalarını önlemek için Türkçe karakterleri evrensel ASCII karşılıklarına dönüştürür.
+
+Python
 def tr_to_en (text):
     mapping = {'İ': 'I', 'ı': 'i', 'Ş': 'S', 'ş': 's', 'Ğ': 'G', 'ğ': 'g', 'Ç': 'C', 'ç': 'c', 'Ö': 'O', 'ö': 'o', 'Ü': 'U', 'ü': 'u'}
     for tr, en in mapping.items():
         text = str(text).replace(tr, en)
     return text
-```
+Zaman Fallback Mekanizması: Eksik veya hatalı zaman damgalarını hiyerarşik kontrol (msgTime ➡️ LogTime ➡️ Timestamp) ile senkronize ederek veri kaybını önler.
 
-* **Zaman Fallback Mekanizması:** Eksik veya hatalı zaman damgalarını hiyerarşik kontrol (msgTime ➡️ LogTime ➡️ Timestamp) ile senkronize ederek veri kaybını önler.
-```python
+Python
 if 'msgTime' in df.columns and 'LogTime' in df.columns:
     df['LogTime'] = df['msgTime'].fillna(df['LogTime'])
 elif 'msgTime' in df.columns:
     df['LogTime'] = df['msgTime']
 df['LogTime'] = pd.to_datetime(df['LogTime'], errors='coerce')
 df['LogTime'] = df['LogTime'].fillna(pd.Timestamp.now())
-```
+2️⃣ Çift Taraflı Sertifika Doğrulamalı Dinleyici (SIEM.Scanner / Program.cs)
+Asenkron mimaride çalışarak clientCertificateRequired: true parametresiyle mTLS el sıkışmasını (Handshake) zorunlu kılar.
 
-### 2️⃣ Çift Taraflı Sertifika Doğrulamalı Dinleyici (`SIEM.Scanner / Program.cs`)
-Asenkron mimaride çalışarak `clientCertificateRequired: true` parametresiyle mTLS el sıkışmasını (Handshake) zorunlu kılar.
-```csharp
+C#
 // TLS 1.2 üzerinden istemci sertifikası zorunlu kılınarak güvenli handshake başlatılır
 await sslStream.AuthenticateAsServerAsync(cert, clientCertificateRequired: true, enabledSslProtocols: SslProtocols.Tls12, checkCertificateRevocation: false);
-```
-
-### 3️⃣ Ayrıştırıcı Motoru (`SIEM.Core / Helpers / CefParser.cs`)
+3️⃣ Ayrıştırıcı Motoru (SIEM.Core / Helpers / CefParser.cs)
 Compiled Regex kullanarak standart dışı CEF metin yığınlarındaki 7 ana zorunlu alanı performanslı bir şekilde yakalar, genel sistem bilgilendirmelerini ve veritabanı için sanitize eder.
-```csharp
+
+C#
 private static readonly Regex CefHeaderRegex = new Regex(@"^CEF:(?<version>\d+)\|(?<vendor>[^|]+)\|(?<product>[^|]+)\|(?<devVersion>[^|]+)\|(?<eventId>[^|]+)\|(?<name>[^|]+)\|(?<severity>[^|]+)\\", RegexOptions.Compiled);
-```
+🔒 Gelişmiş Özellikler ve Mantıksal Kurallar
+Sıfır Veri Kaybı (Zero-Loss) Prensibi: Zaman damgası veya şeması bozuk loglar sistem dışına atılmak yerine akıllı fallback mekanizması ile kurtarılarak analiz süreçlerine dahil edilir.
 
----
+Dinamik Coğrafi Normalizasyon (Analiz Modu): Türkiye kaynaklı saldırılar tespit edildiğinde, bölgesel tehdit yoğunluğunu doğru kümelemek adına veriler 3 ana siber metropole (İstanbul, Ankara, İzmir) yönlendirilir ve haritada Bubble Chart büyüklükleriyle yansıtılır.
 
-## 🔒 Gelişmiş Özellikler ve Mantıksal Kurallar
+Severity Tabanlı Korelasyon: Kritik siber olaylar (Severity 8-10) siber güvenlik standartlarına uygun olarak koyu kırmızı tonlarında boyanarak operasyonel gürültü filtrelenir ve MTTR (Müdahale Süresi) kısaltılır.
 
-* **Sıfır Veri Kaybı (Zero-Loss) Prensibi:** Zaman damgası veya şeması bozuk loglar sistem dışına atılmak yerine akıllı fallback mekanizması ile kurtarılarak analiz süreçlerine dahil edilir.
-* **Dinamik Coğrafi Normalizasyon (Analiz Modu):** Türkiye kaynaklı saldırılar tespit edildiğinde, bölgesel tehdit yoğunluğunu doğru kümelemek adına veriler 3 ana siber metropole (İstanbul, Ankara, İzmir) yönlendirilir ve haritada Bubble Chart büyüklükleriyle yansıtılır.
-* **Severity Tabanlı Korelasyon:** Kritik siber olaylar (Severity 8-10) siber güvenlik standartlarına uygun olarak koyu kırmızı tonlarında boyanarak operasyonel gürültü filtrelenir  ve MTTR (Müdahale Süresi) kısaltılır.
-* **Uçtan Uca Şifreli mTLS Hattı:** Araya girme (MitM) saldırılarını engellemek amacıyla sertifikasız hiçbir cihazın sisteme log basmasına izin verilmez.
+Uçtan Uca Şifreli mTLS Hattı: Araya girme (MitM) saldırılarını engellemek amacıyla sertifikasız hiçbir cihazın sisteme log basmasına izin verilmez.
 
----
+📋 Proje İstatistikleri
+📝 15 Günlük Gerçekçi ve tekli hibrit saldırı senaryosu simülasyonu.
 
-## 📋 Proje İstatistikleri
-* 📝 **15 Günlük** Gerçekçi ve tekli hibrit saldırı senaryosu simülasyonu.
-* ⏱️ **<500ms** API ve anlık log işleme asenkron hızı.
-* 📊 **0 Veri Kaybı** Akıllı Fallback mekanizması doğrulaması.
-* 🛡️ **Uçtan Uca mTLS** TLS 1.2 protokolü tabanlı kimlik doğrulama şifrelemesi.
+⏱️ <500ms API ve anlık log işleme asenkron hızı.
 
-## 📊 Örnek Veri Modelleri ve Teslim Kanıtları
+📊 0 Veri Kaybı Akıllı Fallback mekanizması doğrulaması.
 
+🛡️ Uçtan Uca mTLS TLS 1.2 protokolü tabanlı kimlik doğrulama şifrelemesi.
+
+📊 Örnek Veri Modelleri ve Teslim Kanıtları
 Case-study kapsamında veritabanı mimarisinde tutulan, parse edilen ve korelasyon motoru tarafından üretilen örnek veri blokları aşağıda sunulmuştur:
 
-### 1️⃣ Veritabanında Tutulan Ham ve Parse Edilmiş Log Örnekleri (MongoDB Document)
+1️⃣ Veritabanında Tutulan Ham ve Parse Edilmiş Log Örnekleri (MongoDB Document)
 Sisteme TCP-mTLS veya UDP üzerinden gelen ham log metni, CefParser tarafından işlenerek aşağıdaki hiyerarşik NoSQL nesnesi (JSON) biçiminde saklanmaktadır:
 
-```json
+JSON
 {
   "_id": "69fb5813da2f9fd632f15240",
   "LogTime": "2026-05-06T15:02:43.393+00:00",
@@ -199,7 +192,6 @@ Sisteme TCP-mTLS veya UDP üzerinden gelen ham log metni, CefParser tarafından 
     "user": "misra"
   }
 }
-
 2️⃣ Korelasyon Motoru Tarafından Üretilen Örnek Alarm Kaydı
 rules.json dosyasındaki eşik değerleri (Threshold) ve zaman pencereleri (Time Window) tetiklendiğinde sistem tarafından üretilen örnek kritik alarm yapısı:
 
@@ -216,29 +208,20 @@ JSON
   "AlertSeverity": "Critical",
   "Status": "Active"
 }
-
-## 📂 Kapsamlı Dokümantasyon
-
+📂 Kapsamlı Dokümantasyon
 Geliştirme detayları, prodüksiyon senaryoları ve işyeri eğitimi özet sunumlarına aşağıdaki ek dokümanlardan ulaşabilirsiniz:
-* [📘 Üretim Ortamı ve Kullanım Rehberi](PRODUCTION_READY_GUIDE.md)
-* [🚀 Uçtan Uca Dağıtım ve Kurulum Rehberi](ULTIMATE_DEPLOYMENT_GUIDE.md)
-* [📊 Proje ve İşyeri Eğitimi Özeti](FINAL_PROJECT_SUMMARY.md)
 
----
+📘 Üretim Ortamı ve Kullanım Rehberi
 
-## 📞 İletişim & Geliştirici Bilgileri
+🚀 Uçtan Uca Dağıtım ve Kurulum Rehberi
 
-* **Geliştirici:** Mısra Kara 
-* **Kurum:** Karabük Üniversitesi - Bilgisayar Mühendisliği
-* **Staj Dönemi / Firma:** İşyeri Eğitimi (2026) - Ozztech Bilgi Güvenliği / Oriana Tech 
+📊 Proje ve İşyeri Eğitimi Özeti
 
----
+📞 İletişim & Geliştirici Bilgileri
+Geliştirici: Mısra Kara
 
-<div align="center">
+Kurum: Karabük Üniversitesi - Bilgisayar Mühendisliği
+
+Staj Dönemi / Firma: İşyeri Eğitimi (2026) - Ozztech Bilgi Güvenliği / Oriana Tech
 
 Made with ❤️ by Mısra Kara
-
-![Footer](https://img.shields.io/badge/Built%20with-Python%20%26%20C%23-blue?style=for-the-badge)
-![Footer](https://img.shields.io/badge/Powered%20by-MongoDB-green?style=for-the-badge&logo=mongodb)
-
-</div>
