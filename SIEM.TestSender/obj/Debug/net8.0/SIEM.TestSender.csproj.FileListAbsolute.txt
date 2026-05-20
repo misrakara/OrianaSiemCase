@@ -1,0 +1,15 @@
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.AssemblyInfoInputs.cache
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.AssemblyInfo.cs
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.csproj.CoreCompileInputs.cache
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\SIEM.TestSender.exe
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\SIEM.TestSender.deps.json
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\SIEM.TestSender.runtimeconfig.json
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\SIEM.TestSender.dll
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\SIEM.TestSender.pdb
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.dll
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\refint\SIEM.TestSender.dll
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.pdb
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\SIEM.TestSender.genruntimeconfig.cache
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\obj\Debug\net8.0\ref\SIEM.TestSender.dll
+C:\Users\misra\source\repos\SIEM_Solution\SIEM.TestSender\bin\Debug\net8.0\client.pfx

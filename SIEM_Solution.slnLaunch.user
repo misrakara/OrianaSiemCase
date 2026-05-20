@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Yeni Profil",
+    "Projects": [
+      {
+        "Path": "SIEM.Scanner\\SIEM.Scanner.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SIEM.TestSender\\SIEM.TestSender.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

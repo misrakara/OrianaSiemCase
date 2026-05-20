@@ -1,0 +1,18 @@
+[
+  {
+    "RuleName": "Brute Force Detection",
+    "Description": "Aynı kaynak IP'den 1 dakika içinde 5 ve üzeri hatalı giriş denemesi.",
+    "FieldToTrack": "Extensions.src",
+    "Threshold": 5,
+    "TimeWindowMinutes": 1,
+    "AlertSeverity": "Critical"
+  },
+  {
+    "RuleName": "ID Anomaly (Hijack)",
+    "Description": "Aynı kullanıcı adının farklı IP'lerden eş zamanlı giriş denemesi.",
+    "FieldToTrack": "Extensions.user",
+    "Threshold": 2,
+    "TimeWindowMinutes": 5,
+    "AlertSeverity": "High"
+  }
+]

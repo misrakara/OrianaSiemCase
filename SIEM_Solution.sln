@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIEM.Core", "SIEM.Core\SIEM.Core.csproj", "{41DB4888-E320-48A0-8636-EA2EAD6459E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIEM.Scanner", "SIEM.Scanner\SIEM.Scanner.csproj", "{E32724E9-918C-4FCB-B701-844DF8F03E9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIEM.WebUI", "SIEM.WebUI\SIEM.WebUI.csproj", "{DA037F89-DDC4-471B-90DE-435F2A373899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIEM.TestSender", "SIEM.TestSender\SIEM.TestSender.csproj", "{1F81F669-F5F4-4E37-964A-1C393436617F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Çözüm Öğeleri", "Çözüm Öğeleri", "{AC80F682-3D55-C8F8-4895-A4A9EDD49434}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41DB4888-E320-48A0-8636-EA2EAD6459E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41DB4888-E320-48A0-8636-EA2EAD6459E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41DB4888-E320-48A0-8636-EA2EAD6459E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41DB4888-E320-48A0-8636-EA2EAD6459E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32724E9-918C-4FCB-B701-844DF8F03E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32724E9-918C-4FCB-B701-844DF8F03E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32724E9-918C-4FCB-B701-844DF8F03E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32724E9-918C-4FCB-B701-844DF8F03E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA037F89-DDC4-471B-90DE-435F2A373899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA037F89-DDC4-471B-90DE-435F2A373899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA037F89-DDC4-471B-90DE-435F2A373899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA037F89-DDC4-471B-90DE-435F2A373899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F81F669-F5F4-4E37-964A-1C393436617F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F81F669-F5F4-4E37-964A-1C393436617F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F81F669-F5F4-4E37-964A-1C393436617F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F81F669-F5F4-4E37-964A-1C393436617F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CD72791-EEBD-46C9-A9B7-38493BEAD7F6}
+	EndGlobalSection
+EndGlobal

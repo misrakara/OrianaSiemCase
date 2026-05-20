@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 1. Servis: MongoDB (Veritabanımız)
+  mongodb:
+    image: mongo:latest
+    container_name: siem_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck: # İşte o meşhur Healthcheck mekanizması!
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Servis: Scanner 
+  scanner:
+    build:
+      context: .
+      dockerfile: SIEM.Scanner/Dockerfile
+    container_name: siem_scanner
+    ports:
+      - "514:514/udp" # UDP Log girişi
+      - "514:514"     # TCP Log girişi
+    depends_on:
+      mongodb:
+        condition: service_healthy # Mongo tamamen 'sağlıklı' olmadan çalışma!
+    environment:
+      - MongoConnectionString=mongodb://mongodb:27017
+    volumes:
+      - ./SIEM.Scanner/certs:/app/certs # mTLS sertifikalarını konteynere bağla
+
+volumes:
+  mongo_data:
