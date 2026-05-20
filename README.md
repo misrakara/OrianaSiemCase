@@ -1,4 +1,4 @@
-# 🛡️ Oriana SIEM - UDP/TCP Log Toplama ve Korelasyon Uygulaması
+# 🛡️ SIEM Case Study - UDP/TCP Log Toplama ve Korelasyon Uygulaması
 
 <div align="center">
 
